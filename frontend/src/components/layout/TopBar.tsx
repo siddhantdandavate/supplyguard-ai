@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, LogOut, Menu, Search, Settings, User as UserIcon, Wifi, WifiOff, AlertOctagon, ClipboardList, Truck, Users, Boxes } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { api } from '../../services/api';
+import { api, isDemoMode } from '../../services/api';
 import { NextAction } from '../../types/api';
 import { Badge } from '../ui/Badge';
 
@@ -223,17 +223,28 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenu, notifications, notificat
           )}
         </div>
 
-        {/* API status */}
-        <div
-          className={`hidden items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium sm:flex ${
-            apiOnline === null ? 'border-slate-200 text-slate-500' : apiOnline ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-800'
-          }`}
-          title={apiOnline ? `API reachable · ${latency ?? '?'} ms` : apiOnline === false ? 'API unreachable' : 'Checking API'}
-          role="status"
-        >
-          {apiOnline === false ? <WifiOff className="h-3.5 w-3.5" aria-hidden /> : <Wifi className="h-3.5 w-3.5" aria-hidden />}
-          <span>{apiOnline === null ? 'Checking' : apiOnline ? `API online${latency != null ? ` · ${latency} ms` : ''}` : 'API offline'}</span>
-        </div>
+        {/* Hackathon Demo Notice */}
+        {isDemoMode() ? (
+          <div
+            className="hidden items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-900 shadow-sm sm:flex"
+            title="Demonstration session running with seeded scenario calculations"
+            role="status"
+          >
+            <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+            <span>Hackathon Demo Mode — using demonstration data</span>
+          </div>
+        ) : (
+          <div
+            className={`hidden items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium sm:flex ${
+              apiOnline === null ? 'border-slate-200 text-slate-500' : apiOnline ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-rose-200 bg-rose-50 text-rose-800'
+            }`}
+            title={apiOnline ? `API reachable · ${latency ?? '?'} ms` : apiOnline === false ? 'API unreachable' : 'Checking API'}
+            role="status"
+          >
+            {apiOnline === false ? <WifiOff className="h-3.5 w-3.5" aria-hidden /> : <Wifi className="h-3.5 w-3.5" aria-hidden />}
+            <span>{apiOnline === null ? 'Checking' : apiOnline ? `API online${latency != null ? ` · ${latency} ms` : ''}` : 'API offline'}</span>
+          </div>
+        )}
 
         <div ref={menus} className="flex items-center gap-1">
           {/* Notifications */}

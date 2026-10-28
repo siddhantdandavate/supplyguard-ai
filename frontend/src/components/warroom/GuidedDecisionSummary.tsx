@@ -9,6 +9,7 @@ import {
   Target,
 } from 'lucide-react';
 import { ScenarioResponse, StrategyOutcome } from '../../types/api';
+import { isDemoMode } from '../../services/api';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { fmtDate, fmtMoney, fmtNumber } from '../../lib/format';
@@ -275,7 +276,7 @@ export const GuidedDecisionSummary: React.FC<Props> = ({
                 <p className="mt-1 text-xs text-slate-600 leading-relaxed">
                   Adopting commits this recovery strategy, marks disruption <strong>{result.po_number}</strong> as{' '}
                   <span className="font-semibold text-emerald-700">Mitigated</span>, updates shop-floor schedules,
-                  and records the audit log with your name and parameters.
+                  and records the audit log {isDemoMode() ? 'in your demo session.' : 'with your name and parameters.'}
                 </p>
               </div>
             </div>
@@ -285,7 +286,13 @@ export const GuidedDecisionSummary: React.FC<Props> = ({
                 onClick={onAdopt}
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm"
               >
-                {hasAdoptedPlan ? 'Update / Re-Adopt Plan' : 'Adopt This Plan'}
+                {hasAdoptedPlan
+                  ? isDemoMode()
+                    ? 'Update / Re-Adopt Plan (Demo)'
+                    : 'Update / Re-Adopt Plan'
+                  : isDemoMode()
+                  ? 'Adopt This Plan (Demo)'
+                  : 'Adopt This Plan'}
               </Button>
             </div>
           </div>

@@ -5,7 +5,7 @@ import { DecisionLog } from '../components/warroom/DecisionLog';
 import { downloadText, scenarioToCsv } from '../lib/csv';
 import { RecoveryDecision } from '../types/api';
 import { Modal } from '../components/ui/Modal';
-import { api } from '../services/api';
+import { api, isDemoMode } from '../services/api';
 import { useFetch } from '../hooks/useFetch';
 import { ScenarioAssumptionOverrides, ScenarioResponse, StrategyKey, StrategyOutcome } from '../types/api';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -88,13 +88,20 @@ export const WarRoomPage: React.FC = () => {
   const recommended = strategies.find((s) => s.recommended);
   const sliderMax = Math.max(28, (result?.reported_delay_days ?? 14) * 2);
 
+  const isDemo = isDemoMode();
+
   const adopt = async () => {
     if (!delayId || !current) return;
     setAdopting(true);
     try {
       const decision = await api.adoptDecision(delayId, { strategy_key: current.key, delay_days: delayDays, assumptions: overrides, note: note.trim() || undefined });
       setDecisions((d) => [decision, ...d.map((x) => ({ ...x, status: 'superseded' as const }))]);
-      toast.success('Recovery plan adopted', current.key === 'baseline' ? `${result?.po_number}: accepting the delay was recorded.` : `${result?.po_number} marked as mitigated with "${current.name}".`);
+      toast.success(
+        isDemo ? 'Recovery plan adopted (Demo Mode)' : 'Recovery plan adopted',
+        current.key === 'baseline'
+          ? `${result?.po_number}: accepting the delay was recorded ${isDemo ? 'in demo session state.' : ''}`
+          : `${result?.po_number} marked as mitigated with "${current.name}" ${isDemo ? '(demo session state updated).' : ''}`
+      );
       setConfirmAdopt(false);
       setNote('');
       disruptions.reload(true);
@@ -356,18 +363,23 @@ export const WarRoomPage: React.FC = () => {
       <Modal
         open={confirmAdopt}
         onClose={() => setConfirmAdopt(false)}
-        title="Adopt recovery plan"
+        title={isDemo ? 'Adopt recovery plan (Demo Mode)' : 'Adopt recovery plan'}
         description={`${current?.name ?? ''} for ${result?.po_number ?? ''}`}
         size="md"
         footer={
           <>
             <Button variant="secondary" onClick={() => setConfirmAdopt(false)} disabled={adopting}>Cancel</Button>
-            <Button onClick={adopt} isLoading={adopting}>Adopt plan</Button>
+            <Button onClick={adopt} isLoading={adopting}>{isDemo ? 'Adopt plan (Demo)' : 'Adopt plan'}</Button>
           </>
         }
       >
         {current && (
           <div className="space-y-4 text-sm text-slate-700">
+            {isDemo && (
+              <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">
+                <strong>Hackathon Demo Mode:</strong> Adopting this plan updates your demo session state in the browser and marks this disruption as mitigated without requiring a backend database.
+              </div>
+            )}
             <p>
               This records the plan with the current inputs ({delayDays ?? result?.simulated_delay_days} day delay{Object.keys(overrides).length ? `, ${Object.keys(overrides).length} custom assumption(s)` : ''}) and its expected outcome: {fmtMoney(current.added_cost)} added cost, {fmtMoney(current.penalties_avoided)} penalties avoided, {current.late_orders_count} order(s) still late.
               {current.key !== 'baseline' ? ' The disruption will be marked mitigated and leave the active risk figures.' : ' Accepting the delay keeps the disruption active.'}

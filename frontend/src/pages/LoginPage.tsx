@@ -96,9 +96,15 @@ export const LoginPage: React.FC = () => {
 
   return (
     <AuthLayout title="Sign in" subtitle="Use your SupplyGuard account to open the control center.">
+      {/* Hackathon Demo Notice */}
+      <div className="mb-4 flex items-center justify-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900 shadow-sm">
+        <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+        <span>Hackathon Demo Mode — using demonstration data</span>
+      </div>
+
       {SHOW_DEMO && (
-      <div className="mb-5 rounded-md border border-slate-200 bg-white p-3">
-        <div className="mb-2 text-xs font-medium text-slate-600">Demo accounts (seeded demonstration data)</div>
+      <div className="mb-5 rounded-md border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="mb-2 text-xs font-medium text-slate-600">Demo accounts (click to select and sign in)</div>
         <div className="flex gap-2">
           {DEMO_ACCOUNTS.map((a) => (
             <button
@@ -109,10 +115,10 @@ export const LoginPage: React.FC = () => {
                 setPassword(a.password);
                 setError(null);
               }}
-              className="flex-1 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-left text-xs hover:border-sky-300 hover:bg-sky-50"
+              className="flex-1 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-left text-xs transition-colors hover:border-sky-300 hover:bg-sky-50 focus:outline-none focus:ring-1 focus:ring-sky-500"
             >
               <span className="block font-semibold text-slate-800">{a.label}</span>
-              <span className="block text-slate-500">{a.who}</span>
+              <span className="block text-slate-500 text-[11px] truncate">{a.who}</span>
             </button>
           ))}
         </div>
