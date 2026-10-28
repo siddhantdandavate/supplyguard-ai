@@ -87,7 +87,7 @@ def convert(src, dst):
         m = re.match(r"^(#{1,4})\s+(.*)", line)
         if m:
             level = len(m.group(1))
-            text = m.group(2).strip()
+            text = m.group(2).strip().replace("`", "")
             if level == 1:
                 h = doc.add_heading(text, 0)
                 h.alignment = WD_ALIGN_PARAGRAPH.LEFT
