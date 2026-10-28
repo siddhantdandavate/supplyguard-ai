@@ -1,0 +1,10 @@
+{
+  "name": "SupplyGuard AI — Production Rescue Planner",
+  "short_name": "SupplyGuard",
+  "description": "Respond to supplier disruptions: shortages, affected orders, and recovery trade-offs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0b1220",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

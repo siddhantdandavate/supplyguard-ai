@@ -1,0 +1,34 @@
+# Netlify configuration for the SupplyGuard AI frontend.
+# Site settings -> Build & deploy: base directory, build command and publish directory come from here.
+#
+# Required environment variable in the Netlify UI (Site settings -> Environment variables):
+#   VITE_API_BASE_URL = https://<your-backend-host>      (no trailing slash; the app appends /api)
+# Optional:
+#   VITE_SHOW_DEMO_ACCOUNTS = false                       (hides the demo credential buttons on the login page)
+
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page app: every route is served by index.html and handled by React Router.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
