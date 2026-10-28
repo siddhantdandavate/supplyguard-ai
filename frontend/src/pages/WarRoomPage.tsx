@@ -18,6 +18,7 @@ import { Alert } from '../components/ui/Alert';
 import { ExposureChart, DeliveryChart } from '../components/warroom/ComparisonCharts';
 import { AssumptionsPanel } from '../components/warroom/AssumptionsPanel';
 import { DecisionSummary } from '../components/warroom/DecisionSummary';
+import { GuidedDecisionSummary } from '../components/warroom/GuidedDecisionSummary';
 import { useToast } from '../context/ToastContext';
 import { fmtDate, fmtMoney, fmtNumber, titleCase } from '../lib/format';
 
@@ -218,6 +219,20 @@ export const WarRoomPage: React.FC = () => {
 
       {result && baseline && (
         <>
+          {/* Guided Decision Summary for Non-Technical Planner */}
+          <GuidedDecisionSummary
+            result={result}
+            recommended={recommended ?? strategies[0]}
+            baseline={baseline}
+            onAdopt={() => {
+              setSelectedKey(recommended?.key ?? result.recommended_key);
+              setConfirmAdopt(true);
+            }}
+            hasAdoptedPlan={decisions.some((d) => d.status === 'adopted')}
+            adoptedPlanName={decisions.find((d) => d.status === 'adopted')?.strategy_name}
+            isCustomSimulated={delayDays !== result.reported_delay_days || Object.keys(overrides).length > 0}
+          />
+
           {/* Strategy cards */}
           <section aria-label="Recovery strategies">
             <div className="mb-2 flex items-center justify-between">

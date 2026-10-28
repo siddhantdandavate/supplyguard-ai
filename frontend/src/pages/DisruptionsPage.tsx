@@ -40,7 +40,14 @@ export const DisruptionsPage: React.FC = () => {
     { key: 'supplier', header: 'Supplier', render: (d) => d.supplier_name, sortValue: (d) => d.supplier_name },
     { key: 'material', header: 'Material', render: (d) => (<span><span className="block text-slate-900">{d.material_name}</span><span className="block text-xs text-slate-500">{d.material_sku} · {fmtNumber(d.quantity_delayed)} units</span></span>), sortValue: (d) => d.material_name },
     { key: 'orig', header: 'Original ETA', render: (d) => fmtDate(d.original_eta), sortValue: (d) => d.original_eta },
-    { key: 'rev', header: 'Revised ETA', render: (d) => <span className="text-rose-700">{fmtDate(d.revised_eta)}</span>, sortValue: (d) => d.revised_eta },
+    { key: 'rev', header: 'Revised ETA', render: (d) => (
+      <div>
+        <span className="text-rose-700 font-medium">{fmtDate(d.revised_eta)}</span>
+        {d.last_updated_by_role === 'supplier' && (
+          <span className="block text-[10px] font-semibold text-indigo-700">Supplier updated</span>
+        )}
+      </div>
+    ), sortValue: (d) => d.revised_eta },
     { key: 'delay', header: 'Delay', render: (d) => <span className="font-medium">+{d.delay_days} d</span>, sortValue: (d) => d.delay_days, align: 'right' },
     { key: 'affected', header: 'Affected orders', render: (d) => (<span>{d.affected_orders_count}{d.late_orders_count > 0 && <span className="block text-xs text-rose-600">{d.late_orders_count} late</span>}</span>), sortValue: (d) => d.affected_orders_count, align: 'right' },
     { key: 'exposure', header: 'Penalty exposure', render: (d) => <span className={d.sla_penalty_exposure > 0 ? 'font-medium text-rose-700' : 'text-slate-500'}>{fmtMoney(d.sla_penalty_exposure)}</span>, sortValue: (d) => d.sla_penalty_exposure, align: 'right' },

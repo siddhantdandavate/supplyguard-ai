@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
+import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { DashboardSummary } from '../../types/api';
 
 const APP_VERSION = '1.1.0';
 
 export const AppShell: React.FC = () => {
+  const { user } = useAuth();
+  const isSupplier = user?.role === 'supplier';
   const [mobileOpen, setMobileOpen] = useState(false);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(true);
@@ -17,6 +20,7 @@ export const AppShell: React.FC = () => {
   // Page title per route
   useEffect(() => {
     const titles: Array<[RegExp, string]> = [
+      [/^\/supplier/, 'Supplier Shipment Workspace'],
       [/^\/$/, 'Control Center'], [/^\/disruptions\/\d+/, 'Disruption'], [/^\/disruptions/, 'Disruptions'], [/^\/war-room/, 'What-If War Room'],
       [/^\/orders/, 'Production Orders'], [/^\/inventory/, 'Inventory'], [/^\/suppliers/, 'Suppliers'], [/^\/customers/, 'Customers'], [/^\/settings/, 'Settings'],
     ];
@@ -31,6 +35,10 @@ export const AppShell: React.FC = () => {
 
   // Lightweight shell data: disruption counts for the sidebar, next actions for the bell.
   useEffect(() => {
+    if (isSupplier) {
+      setSummaryLoading(false);
+      return;
+    }
     let mounted = true;
     const load = async () => {
       try {
@@ -48,7 +56,7 @@ export const AppShell: React.FC = () => {
       mounted = false;
       window.clearInterval(id);
     };
-  }, [pathname]);
+  }, [pathname, isSupplier]);
 
   const active = summary?.disruptions.filter((d) => d.status === 'active') ?? [];
 

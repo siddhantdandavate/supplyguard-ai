@@ -1,6 +1,6 @@
 export type RiskLevel = 'critical' | 'high' | 'medium' | 'low';
 export type Severity = 'critical' | 'high' | 'medium';
-export type DisruptionStatus = 'active' | 'mitigated' | 'resolved';
+export type DisruptionStatus = 'active' | 'mitigated' | 'resolved' | 'delayed' | 'customs_hold' | 'in_transit' | 'delivered';
 export type OrderStatus = 'scheduled' | 'in_progress' | 'delayed' | 'completed';
 export type StockStatus = 'critical' | 'low' | 'healthy';
 export type StrategyKey = 'baseline' | 'expedite' | 'alternate' | 'reallocation' | 'combined';
@@ -9,7 +9,8 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
-  role: 'planner' | 'admin' | 'operator' | 'viewer';
+  role: 'planner' | 'admin' | 'supplier' | 'operator' | 'viewer';
+  supplier_id?: number | null;
   is_active: boolean;
   created_at: string;
 }
@@ -118,6 +119,30 @@ export interface ProductionOrder {
   blocking_material: string | null;
 }
 
+export interface ShipmentUpdateHistory {
+  id: number;
+  shipment_delay_id: number;
+  updated_by_user_id: number | null;
+  updated_by_name: string | null;
+  previous_status: string | null;
+  new_status: string;
+  previous_revised_eta: string | null;
+  new_revised_eta: string;
+  previous_quantity_delayed: number | null;
+  new_quantity_delayed: number;
+  delay_reason: string | null;
+  note: string | null;
+  updated_at: string;
+}
+
+export interface SupplierShipmentUpdatePayload {
+  status?: string;
+  revised_eta?: string;
+  reason?: string;
+  quantity_delayed?: number;
+  note?: string;
+}
+
 export interface ShipmentDelay {
   id: number;
   po_number: string;
@@ -131,8 +156,11 @@ export interface ShipmentDelay {
   status: DisruptionStatus;
   impact_severity: Severity;
   reported_at: string;
+  updated_at?: string | null;
+  last_updated_by_role?: string | null;
   supplier?: Supplier | null;
   material?: Material | null;
+  update_history?: ShipmentUpdateHistory[];
 }
 
 export interface SupplierDetail extends Supplier {
@@ -166,6 +194,9 @@ export interface DisruptionSummary {
   impact_severity: Severity;
   reason: string | null;
   reported_at: string;
+  updated_at?: string | null;
+  last_updated_by_role?: string | null;
+  last_update_reason?: string | null;
   affected_orders_count: number;
   late_orders_count: number;
   shortage_units: number;

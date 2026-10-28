@@ -4,7 +4,7 @@ from typing import Dict, List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.api.disruptions import decision_out, summarize
 from app.core.config import settings
 from app.core.database import get_db
@@ -20,7 +20,7 @@ from app.schemas.dashboard import (
 )
 from app.services import engine
 
-router = APIRouter(prefix="/dashboard", tags=["Dashboard"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/dashboard", tags=["Dashboard"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def order_risk_map(db: Session) -> Dict[int, dict]:

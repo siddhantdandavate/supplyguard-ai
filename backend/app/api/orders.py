@@ -5,13 +5,13 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.api.dashboard import order_risk_map, risk_level
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.core.database import get_db
 from app.models.disruption import ProductionOrder
 from app.schemas.aggregates import ProductionOrderWithRisk
 from app.schemas.disruption import ProductionOrderResponse
 
-router = APIRouter(prefix="/orders", tags=["Production Orders"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/orders", tags=["Production Orders"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def with_risk(o: ProductionOrder, risk: dict) -> ProductionOrderWithRisk:

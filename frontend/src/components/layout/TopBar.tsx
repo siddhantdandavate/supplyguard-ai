@@ -13,6 +13,7 @@ interface TopBarProps {
 }
 
 const titles: Array<[RegExp, string]> = [
+  [/^\/supplier/, 'Supplier Shipment Workspace'],
   [/^\/$/, 'Production Control Center'],
   [/^\/disruptions\/\d+/, 'Disruption Details'],
   [/^\/disruptions/, 'Disruptions'],
@@ -72,8 +73,25 @@ export const TopBar: React.FC<TopBarProps> = ({ onMenu, notifications, notificat
   const indexRef = useRef<SearchHit[] | null>(null);
   const searchBox = useRef<HTMLDivElement>(null);
 
+  const isSupplier = user?.role === 'supplier';
+
   const buildIndex = async (): Promise<SearchHit[]> => {
     if (indexRef.current) return indexRef.current;
+    if (isSupplier) {
+      try {
+        const shipments = await api.getSupplierShipments();
+        const idx: SearchHit[] = shipments.map((s) => ({
+          kind: 'disruption' as const,
+          title: `${s.po_number} · ${s.material?.name ?? 'Assigned Material'}`,
+          subtitle: `${s.quantity_delayed} units · Status: ${s.status.replace('_', ' ')} · ETA: ${s.revised_eta}`,
+          to: '/supplier',
+        }));
+        indexRef.current = idx;
+        return idx;
+      } catch {
+        return [];
+      }
+    }
     const [orders, disruptions, suppliers, customers, inventory] = await Promise.all([
       api.getOrders(),
       api.getDisruptions(),

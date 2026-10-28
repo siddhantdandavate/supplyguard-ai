@@ -31,6 +31,9 @@ venv.bak/
 *.sqlite
 *.sqlite3
 supplyguard.db
+**/supplyguard.db
+backend/supplyguard.db
+backend/tests/_test_*.db
 
 # Testing & Coverage
 .pytest_cache/
@@ -64,9 +67,21 @@ frontend/dist-ssr/
 .env.production.local
 *.env
 .env.*
+**/.env
+**/.env.*
 !.env.example
+!**/.env.example
+*.pem
+*.key
+*.cert
+*.pfx
+*.p12
+*.secret
+*.token
+credentials.json
+service-account*.json
 
-# IDE & OS
+# IDE, OS & Office temporary files
 .vscode/
 .idea/
 *.swp
@@ -75,9 +90,12 @@ frontend/dist-ssr/
 .DS_Store
 Thumbs.db
 Desktop.ini
-
-
-# Databases
-*.db
-*.sqlite3
-backend/tests/_test_*.db
+~$*
+~$*.docx
+~$*.xlsx
+~$*.pptx
+**/~$*
+**/~$*.docx
+**/~$*.xlsx
+**/~$*.pptx
+*.tmp

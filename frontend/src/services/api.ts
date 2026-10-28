@@ -22,6 +22,7 @@ import {
   Supplier,
   SupplierCreate,
   SupplierDetail,
+  SupplierShipmentUpdatePayload,
   SystemInfo,
   User,
 } from '../types/api';
@@ -173,6 +174,13 @@ export const api = {
   getCustomers: () => request<CustomerDetail[]>('/customers'),
   getCustomer: (id: number) => request<CustomerDetail>(`/customers/${id}`),
   createCustomer: (payload: CustomerCreate) => request<Customer>('/customers', { method: 'POST', body: JSON.stringify(payload) }),
+
+  // Supplier Portal
+  getSupplierProfile: () => request<Supplier>('/supplier/profile'),
+  getSupplierShipments: () => request<ShipmentDelay[]>('/supplier/shipments'),
+  getSupplierShipment: (id: number) => request<ShipmentDelay>(`/supplier/shipments/${id}`),
+  updateSupplierShipment: (id: number, payload: SupplierShipmentUpdatePayload) =>
+    request<ShipmentDelay>(`/supplier/shipments/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
 };
 
 export type { Supplier, Customer };

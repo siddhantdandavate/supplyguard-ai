@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_planner_or_admin
 from app.core.database import get_db
 from app.models.disruption import RecoveryDecision, ShipmentDelay
 from app.models.inventory import Inventory
@@ -20,7 +20,7 @@ from app.schemas.inventory import InventoryResponse
 from app.schemas.scenario import OrderOutcomeOut, StrategyOutcomeOut
 from app.services import engine
 
-router = APIRouter(prefix="/disruptions", tags=["Disruptions"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/disruptions", tags=["Disruptions"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def summarize(db: Session, delay: ShipmentDelay, with_recommendation: bool = False) -> DisruptionSummary:
@@ -45,6 +45,9 @@ def summarize(db: Session, delay: ShipmentDelay, with_recommendation: bool = Fal
         impact_severity=delay.impact_severity,
         reason=delay.reason,
         reported_at=delay.reported_at.isoformat(),
+        updated_at=delay.updated_at.isoformat() if getattr(delay, "updated_at", None) else delay.reported_at.isoformat(),
+        last_updated_by_role=getattr(delay, "last_updated_by_role", None),
+        last_update_reason=delay.reason,
         affected_orders_count=base.affected_orders_count,
         late_orders_count=base.late_orders_count,
         shortage_units=base.shortage_units_immediate,

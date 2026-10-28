@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.dashboard import order_risk_map
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.api.orders import with_risk
 from app.core.database import get_db
 from app.models.customer import Customer
@@ -12,7 +12,7 @@ from app.models.disruption import ProductionOrder
 from app.schemas.aggregates import CustomerDetail
 from app.schemas.customer import CustomerCreate, CustomerResponse
 
-router = APIRouter(prefix="/customers", tags=["Customers"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/customers", tags=["Customers"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def _detail(db: Session, c: Customer, risk: dict) -> CustomerDetail:

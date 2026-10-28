@@ -69,6 +69,18 @@ def seed_database(db: Session | None = None, force: bool = False) -> bool:
         db.add_all([sup_apex, sup_helios, sup_vanguard, sup_pacific, sup_titan, sup_norden])
         db.flush()
 
+        # Demo supplier account linked to Apex Sensors
+        sup_user = User(
+            email="supplier@apexsensors.example",
+            full_name="Wei Zhang (Apex Sensors)",
+            hashed_password=get_password_hash("password123"),
+            role="supplier",
+            supplier_id=sup_apex.id,
+            is_active=True,
+        )
+        db.add(sup_user)
+        db.flush()
+
         # ------------------------------------------------------------ materials
         m_encoder = Material(sku="MAT-OPT-SENS", name="Optical Rotary Encoder 1024 PPR", description="Differential line driver incremental optical encoder", category="Electronics", unit_of_measure="PCS", unit_cost=36.00, supplier_id=sup_apex.id, alternate_supplier_id=sup_helios.id, standard_lead_time_days=18, safety_stock=50)
         m_stepper = Material(sku="MAT-STP-NEMA23", name="NEMA 23 High-Torque Stepper Motor", description="1.8 deg dual shaft bipolar stepper motor, 2.8A", category="Motors & Actuators", unit_of_measure="PCS", unit_cost=42.00, supplier_id=sup_norden.id, alternate_supplier_id=sup_vanguard.id, standard_lead_time_days=16, safety_stock=40)

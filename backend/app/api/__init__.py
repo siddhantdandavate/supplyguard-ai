@@ -10,6 +10,7 @@ from app.api.suppliers import router as suppliers_router
 from app.api.materials import router as materials_router
 from app.api.inventory import router as inventory_router
 from app.api.customers import router as customers_router
+from app.api.supplier import router as supplier_router
 
 api_router = APIRouter()
 api_router.include_router(health_router, tags=["Health"])
@@ -23,3 +24,4 @@ api_router.include_router(suppliers_router)
 api_router.include_router(materials_router)
 api_router.include_router(inventory_router)
 api_router.include_router(customers_router)
+api_router.include_router(supplier_router)

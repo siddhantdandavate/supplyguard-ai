@@ -1,4 +1,5 @@
 from datetime import datetime, date, timezone
+from typing import Optional
 from sqlalchemy import Column, Integer, String, Float, DateTime, Date, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -52,11 +53,44 @@ class ShipmentDelay(Base):
     status = Column(String(50), default="active", nullable=False)  # active, mitigated, resolved
     impact_severity = Column(String(50), default="high", nullable=False)  # critical, high, medium
     reported_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    last_updated_by_role = Column(String(50), nullable=True)  # supplier, planner, admin
 
     supplier = relationship("Supplier", back_populates="shipment_delays")
     material = relationship("Material", back_populates="shipment_delays")
     recovery_options = relationship("RecoveryOption", back_populates="shipment_delay", cascade="all, delete-orphan")
     decisions = relationship("RecoveryDecision", back_populates="shipment_delay", cascade="all, delete-orphan", order_by="RecoveryDecision.decided_at.desc()")
+    update_history = relationship("ShipmentUpdateHistory", back_populates="shipment_delay", cascade="all, delete-orphan", order_by="ShipmentUpdateHistory.updated_at.desc()")
+
+
+class ShipmentUpdateHistory(Base):
+    """Audit log of updates submitted by suppliers or planners."""
+    __tablename__ = "shipment_update_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    shipment_delay_id = Column(Integer, ForeignKey("shipment_delays.id", ondelete="CASCADE"), nullable=False, index=True)
+    updated_by_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    previous_status = Column(String(50), nullable=True)
+    new_status = Column(String(50), nullable=False)
+    previous_revised_eta = Column(Date, nullable=True)
+    new_revised_eta = Column(Date, nullable=False)
+    previous_quantity_delayed = Column(Integer, nullable=True)
+    new_quantity_delayed = Column(Integer, nullable=False)
+    delay_reason = Column(String(255), nullable=True)
+    note = Column(Text, nullable=True)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    shipment_delay = relationship("ShipmentDelay", back_populates="update_history")
+    updated_by = relationship("User")
+
+    @property
+    def updated_by_name(self) -> Optional[str]:
+        return self.updated_by.full_name if self.updated_by else None
 
 
 class RecoveryOption(Base):
@@ -75,7 +109,6 @@ class RecoveryOption(Base):
     recommended = Column(Integer, default=0, nullable=False)     # 1 if top recommended
 
     shipment_delay = relationship("ShipmentDelay", back_populates="recovery_options")
-
 
 
 class RecoveryDecision(Base):

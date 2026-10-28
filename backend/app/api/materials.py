@@ -1,13 +1,13 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.core.database import get_db
 from app.models.material import Material
 from app.models.inventory import Inventory
 from app.schemas.material import MaterialCreate, MaterialResponse
 
-router = APIRouter(prefix="/materials", tags=["Materials"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/materials", tags=["Materials"], dependencies=[Depends(require_planner_or_admin)])
 
 
 @router.get("", response_model=List[MaterialResponse])

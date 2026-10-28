@@ -14,6 +14,7 @@ class UserBase(BaseModel):
     email: str = Field(..., min_length=3, max_length=255, description="User email address")
     full_name: str = Field(..., min_length=2, max_length=255)
     role: str = "planner"
+    supplier_id: Optional[int] = None
 
     @field_validator("email")
     @classmethod
@@ -24,8 +25,8 @@ class UserBase(BaseModel):
     @classmethod
     def _role(cls, v: str) -> str:
         v = (v or "planner").strip().lower()
-        if v not in ("planner", "admin", "operator", "viewer"):
-            raise ValueError("Role must be one of planner, admin, operator, viewer.")
+        if v not in ("planner", "admin", "operator", "viewer", "supplier"):
+            raise ValueError("Role must be one of planner, admin, supplier, operator, viewer.")
         return v
 
 

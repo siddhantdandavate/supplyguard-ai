@@ -38,12 +38,26 @@ export const DashboardPage: React.FC = () => {
   const disruptionColumns: Column<DisruptionSummary>[] = [
     { key: 'po', header: 'Shipment', render: (d) => (<span><span className="block font-medium text-slate-900">{d.po_number}</span><span className="block text-xs text-slate-500">{d.supplier_name}</span></span>), sortValue: (d) => d.po_number },
     { key: 'material', header: 'Material', render: (d) => (<span><span className="block">{d.material_name}</span><span className="block text-xs text-slate-500">{d.material_sku} · {fmtNumber(d.quantity_delayed)} units</span></span>) },
-    { key: 'delay', header: 'Delay', render: (d) => <span className="font-medium text-slate-900">+{d.delay_days} days</span>, sortValue: (d) => d.delay_days, align: 'right' },
+    { key: 'delay', header: 'Delay / ETA', render: (d) => (
+      <div>
+        <span className="font-medium text-slate-900">+{d.delay_days} days</span>
+        <span className="block text-xs text-slate-500">ETA: {fmtDate(d.revised_eta)}</span>
+      </div>
+    ), sortValue: (d) => d.delay_days, align: 'left' },
     { key: 'orders', header: 'Late orders', render: (d) => <span>{d.late_orders_count} <span className="text-slate-400">of {d.affected_orders_count}</span></span>, sortValue: (d) => d.late_orders_count, align: 'right' },
     { key: 'exposure', header: 'Penalty exposure', render: (d) => <span className={d.sla_penalty_exposure > 0 ? 'font-medium text-rose-700' : 'text-slate-500'}>{fmtMoney(d.sla_penalty_exposure)}</span>, sortValue: (d) => d.sla_penalty_exposure, align: 'right' },
     { key: 'severity', header: 'Severity', render: (d) => <Badge tone={riskTone(d.impact_severity)}>{titleCase(d.impact_severity)}</Badge> },
     { key: 'status', header: 'Status', render: (d) => <Badge tone={statusTone(d.status)}>{titleCase(d.status)}</Badge> },
-    { key: 'reported', header: 'Reported', render: (d) => <span className="text-slate-500">{fmtDateTime(d.reported_at)}</span>, sortValue: (d) => d.reported_at },
+    { key: 'updated', header: 'Last Update', render: (d) => (
+      <div>
+        <span className="text-xs text-slate-700">{fmtDateTime(d.updated_at ?? d.reported_at)}</span>
+        {d.last_updated_by_role === 'supplier' && (
+          <span className="mt-0.5 inline-flex items-center gap-1 rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200">
+            Supplier update
+          </span>
+        )}
+      </div>
+    ), sortValue: (d) => d.updated_at ?? d.reported_at },
   ];
 
   return (
@@ -83,6 +97,15 @@ export const DashboardPage: React.FC = () => {
                           <> Recommended: <span className="font-medium text-slate-800">{headline.recommended_strategy}</span> for {fmtMoney(headline.recommended_cost)} avoiding {fmtMoney(headline.recommended_penalties_avoided)}.</>
                         )}
                       </p>
+                      {headline.last_updated_by_role === 'supplier' && (
+                        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-indigo-200 bg-indigo-50/80 px-3 py-2 text-xs text-indigo-900">
+                          <Truck className="h-4 w-4 flex-shrink-0 text-indigo-600" />
+                          <span>
+                            <strong>Supplier update:</strong> Revised ETA is <strong>{fmtDate(headline.revised_eta)}</strong> (+{headline.delay_days} days slip).
+                            {headline.reason ? ` Reason: "${headline.reason}"` : ''} · Updated {fmtDateTime(headline.updated_at ?? headline.reported_at)}.
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-shrink-0 gap-2">

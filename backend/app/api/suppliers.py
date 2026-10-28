@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.core.database import get_db
 from app.models.disruption import ShipmentDelay
 from app.models.material import Material
@@ -13,7 +13,7 @@ from app.schemas.disruption import ShipmentDelayResponse
 from app.schemas.material import MaterialResponse
 from app.schemas.supplier import SupplierCreate, SupplierResponse
 
-router = APIRouter(prefix="/suppliers", tags=["Suppliers"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/suppliers", tags=["Suppliers"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def _detail(db: Session, s: Supplier) -> SupplierDetail:

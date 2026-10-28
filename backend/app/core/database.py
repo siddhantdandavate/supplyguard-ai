@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Generator
 
 from sqlalchemy import create_engine
@@ -7,11 +8,20 @@ from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from app.core.config import settings
 
 logger = logging.getLogger("supplyguard.database")
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+
+
+def _resolve_sqlite_url(url: str) -> str:
+    if url.startswith("sqlite:///./"):
+        rel_name = url.replace("sqlite:///./", "")
+        target = BACKEND_DIR / rel_name
+        return f"sqlite:///{target.as_posix()}"
+    return url
 
 
 def create_app_engine():
     """PostgreSQL when reachable; otherwise SQLite for local development."""
-    db_url = settings.DATABASE_URL
+    db_url = _resolve_sqlite_url(settings.DATABASE_URL)
     try:
         if db_url.startswith("postgres://"):
             # Some hosts (Heroku-style) hand out the legacy scheme.
@@ -40,7 +50,7 @@ def create_app_engine():
             raise RuntimeError(f"Could not connect to the production database: {e}") from e
         logger.warning("Could not connect to PostgreSQL (%s). Falling back to SQLite for local development.", e.__class__.__name__)
 
-    sqlite_url = settings.SQLITE_FALLBACK_URL
+    sqlite_url = _resolve_sqlite_url(settings.SQLITE_FALLBACK_URL)
     logger.info("Using SQLite database engine at %s", sqlite_url)
     return create_engine(sqlite_url, connect_args={"check_same_thread": False})
 

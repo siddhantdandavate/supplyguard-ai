@@ -9,6 +9,7 @@ import { Alert } from '../components/ui/Alert';
 const DEMO_ACCOUNTS = [
   { label: 'Planner', email: 'planner@supplyguard.io', password: 'password123', who: 'Sarah Jenkins' },
   { label: 'Admin', email: 'admin@supplyguard.io', password: 'admin123', who: 'Marcus Vance' },
+  { label: 'Supplier', email: 'supplier@apexsensors.example', password: 'password123', who: 'Wei Zhang (Apex Sensors)' },
 ];
 
 const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -83,8 +84,9 @@ export const LoginPage: React.FC = () => {
     if (!emailValid(email) || !password) return;
     setLoading(true);
     try {
-      await login({ email: email.trim(), password });
-      navigate(from, { replace: true });
+      const authed = await login({ email: email.trim(), password });
+      const destination = authed.role === 'supplier' ? '/supplier' : from;
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed');
     } finally {

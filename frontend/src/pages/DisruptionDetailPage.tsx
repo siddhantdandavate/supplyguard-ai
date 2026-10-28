@@ -127,6 +127,8 @@ export const DisruptionDetailPage: React.FC = () => {
                     { label: 'Standard lead time', value: `${data.disruption.supplier?.lead_time_days ?? '—'} days` },
                     { label: 'Original ETA', value: fmtDate(data.disruption.original_eta), tone: 'muted' },
                     { label: 'Revised ETA', value: `${fmtDate(data.disruption.revised_eta)} (${relativeDays(data.disruption.revised_eta)})`, tone: 'critical' },
+                    { label: 'Last updated', value: `${fmtDate(data.disruption.updated_at ?? data.disruption.reported_at)} (${data.disruption.last_updated_by_role ?? 'system'})` },
+                    { label: 'Delay reason', value: data.disruption.reason ?? '—' },
                     { label: 'On-time rate', value: fmtPct(data.disruption.supplier?.on_time_delivery_rate) },
                     { label: 'Reliability', value: data.disruption.supplier ? `${data.disruption.supplier.reliability_score.toFixed(1)} / 10` : '—' },
                   ]}

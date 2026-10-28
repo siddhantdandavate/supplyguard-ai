@@ -1,12 +1,12 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.core.database import get_db
 from app.models.inventory import Inventory
 from app.schemas.inventory import InventoryResponse, InventoryUpdate
 
-router = APIRouter(prefix="/inventory", tags=["Inventory"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/inventory", tags=["Inventory"], dependencies=[Depends(require_planner_or_admin)])
 
 
 def stock_status(inv: Inventory) -> str:

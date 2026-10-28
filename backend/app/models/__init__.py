@@ -7,6 +7,7 @@ from app.models.disruption import (
     ProductionOrder,
     ProductionOrderMaterial,
     ShipmentDelay,
+    ShipmentUpdateHistory,
     RecoveryOption,
     RecoveryDecision,
 )
@@ -20,6 +21,7 @@ __all__ = [
     "ProductionOrder",
     "ProductionOrderMaterial",
     "ShipmentDelay",
+    "ShipmentUpdateHistory",
     "RecoveryOption",
     "RecoveryDecision",
 ]

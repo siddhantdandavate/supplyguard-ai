@@ -4,7 +4,7 @@ import { Loader2, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const RequireAuth: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -24,11 +24,27 @@ export const RequireAuth: React.FC = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
+
+  // Restrict suppliers from accessing planner/admin pages
+  if (user?.role === 'supplier') {
+    const isSupplierAllowedPath = location.pathname.startsWith('/supplier') || location.pathname.startsWith('/settings');
+    if (!isSupplierAllowedPath) {
+      return <Navigate to="/supplier" replace />;
+    }
+  }
+
+  // Prevent planners from visiting the dedicated supplier workspace
+  if (user && user.role !== 'supplier' && location.pathname.startsWith('/supplier')) {
+    return <Navigate to="/" replace />;
+  }
+
   return <Outlet />;
 };
 
 export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  if (!isLoading && isAuthenticated) return <Navigate to="/" replace />;
+  const { user, isAuthenticated, isLoading } = useAuth();
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to={user?.role === 'supplier' ? '/supplier' : '/'} replace />;
+  }
   return <>{children}</>;
 };

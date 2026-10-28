@@ -2,7 +2,8 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
-  role: 'planner' | 'admin' | 'viewer';
+  role: 'planner' | 'admin' | 'supplier' | 'operator' | 'viewer';
+  supplier_id?: number | null;
   is_active: boolean;
   created_at: string;
 }

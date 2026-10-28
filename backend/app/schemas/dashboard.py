@@ -32,6 +32,9 @@ class DisruptionSummary(BaseModel):
     impact_severity: str
     reason: Optional[str]
     reported_at: str
+    updated_at: Optional[str] = None
+    last_updated_by_role: Optional[str] = None
+    last_update_reason: Optional[str] = None
     affected_orders_count: int
     late_orders_count: int
     shortage_units: int

@@ -4,13 +4,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import require_planner_or_admin
 from app.core.database import get_db
 from app.models.disruption import ShipmentDelay
 from app.schemas.scenario import ScenarioRequest, ScenarioResponse, StrategyInfo
 from app.services import engine
 
-router = APIRouter(prefix="/scenarios", tags=["What-If War Room"], dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/scenarios", tags=["What-If War Room"], dependencies=[Depends(require_planner_or_admin)])
 
 
 @router.get("/strategies", response_model=List[StrategyInfo])

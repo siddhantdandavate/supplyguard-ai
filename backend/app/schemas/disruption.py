@@ -49,6 +49,24 @@ class RecoveryOptionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ShipmentUpdateHistoryResponse(BaseModel):
+    id: int
+    shipment_delay_id: int
+    updated_by_user_id: Optional[int] = None
+    updated_by_name: Optional[str] = None
+    previous_status: Optional[str] = None
+    new_status: str
+    previous_revised_eta: Optional[date] = None
+    new_revised_eta: date
+    previous_quantity_delayed: Optional[int] = None
+    new_quantity_delayed: int
+    delay_reason: Optional[str] = None
+    note: Optional[str] = None
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ShipmentDelayResponse(BaseModel):
     id: int
     po_number: str
@@ -62,9 +80,19 @@ class ShipmentDelayResponse(BaseModel):
     status: str
     impact_severity: str
     reported_at: datetime
+    updated_at: Optional[datetime] = None
+    last_updated_by_role: Optional[str] = None
     supplier: Optional[SupplierResponse] = None
     material: Optional[MaterialResponse] = None
     recovery_options: List[RecoveryOptionResponse] = []
+    update_history: List[ShipmentUpdateHistoryResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class SupplierShipmentUpdate(BaseModel):
+    status: Optional[str] = None
+    revised_eta: Optional[date] = None
+    reason: Optional[str] = None
+    quantity_delayed: Optional[int] = None
+    note: Optional[str] = None

@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.core.database import Base, engine
 import app.models  # noqa: F401  (register all models with Base before create_all)
 from app.db.seed import seed_database, reset_database
+from app.db.migrations import run_migrations
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("supplyguard.main")
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI):
             reset_database()
         logger.info("Initializing database schema...")
         Base.metadata.create_all(bind=engine)
+        run_migrations()
         if settings.SEED_DEMO_DATA:
             seed_database()
     except Exception as e:  # pragma: no cover - startup diagnostics

@@ -6,8 +6,8 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
+  register: (data: RegisterCredentials) => Promise<User>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   setUser: (user: User) => void;
@@ -48,12 +48,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const res = await api.login(credentials);
     setToken(res.access_token);
     setUser(res.user);
+    return res.user;
   }, []);
 
   const register = useCallback(async (data: RegisterCredentials) => {
     const res = await api.register(data);
     setToken(res.access_token);
     setUser(res.user);
+    return res.user;
   }, []);
 
   const refreshUser = useCallback(async () => {
