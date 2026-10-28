@@ -15,7 +15,8 @@ const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const SHOW_DEMO = (import.meta.env.VITE_SHOW_DEMO_ACCOUNTS ?? 'true').toLowerCase() !== 'false';
 
 export const AuthLayout: React.FC<{ children: React.ReactNode; title: string; subtitle: string }> = ({ children, title, subtitle }) => (
-  <div className="flex min-h-screen bg-slate-50">
+  <div className="screen-scroll scroll-thin bg-slate-50">
+   <div className="flex min-h-full">
     <aside className="hidden w-[46%] flex-col justify-between bg-navy-900 p-10 text-slate-300 lg:flex">
       <div className="flex items-center gap-2.5">
         <div className="rounded-md bg-sky-600 p-1.5 text-white">
@@ -55,6 +56,7 @@ export const AuthLayout: React.FC<{ children: React.ReactNode; title: string; su
         <div className="mt-6">{children}</div>
       </div>
     </main>
+   </div>
   </div>
 );
 

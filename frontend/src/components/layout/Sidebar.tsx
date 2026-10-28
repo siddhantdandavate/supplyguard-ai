@@ -115,7 +115,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose, activeDis
 
   return (
     <>
-      <aside className="hidden w-60 flex-shrink-0 lg:block">{content}</aside>
+      <aside className="hidden h-full w-60 flex-shrink-0 lg:block">{content}</aside>
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/60" onClick={onClose} aria-hidden />

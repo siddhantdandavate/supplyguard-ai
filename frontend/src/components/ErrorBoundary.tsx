@@ -19,7 +19,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
   render() {
     if (!this.state.error) return this.props.children;
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6" role="alert">
+      <div className="screen-scroll flex items-center justify-center bg-slate-50 p-6" role="alert">
         <div className="w-full max-w-md rounded-lg border border-rose-200 bg-white p-6 shadow-card">
           <div className="flex items-center gap-3">
             <div className="rounded-md bg-rose-50 p-2 text-rose-700">

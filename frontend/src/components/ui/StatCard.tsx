@@ -34,7 +34,7 @@ export const StatCard: React.FC<StatCardProps> = ({ label, value, hint, icon: Ic
       {hint && <div className="mt-1 text-xs text-slate-500">{hint}</div>}
     </>
   );
-  const cls = 'group block rounded-lg border border-slate-200 bg-white p-4 shadow-card transition-colors';
+  const cls = 'card-hover group block rounded-lg border border-slate-200 bg-white p-4 shadow-card';
   return to ? (
     <Link to={to} className={`${cls} hover:border-slate-300 hover:bg-slate-50`}>
       {body}

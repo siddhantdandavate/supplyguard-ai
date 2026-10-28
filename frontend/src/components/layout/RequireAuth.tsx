@@ -9,7 +9,7 @@ export const RequireAuth: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-50 text-slate-600" role="status" aria-live="polite">
+      <div className="screen-scroll flex flex-col items-center justify-center gap-3 bg-slate-50 text-slate-600" role="status" aria-live="polite">
         <div className="rounded-lg bg-navy-900 p-2.5 text-white">
           <ShieldAlert className="h-5 w-5" aria-hidden />
         </div>
